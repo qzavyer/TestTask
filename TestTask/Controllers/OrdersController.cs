@@ -21,6 +21,16 @@ namespace TestTask.Controllers
         /// </summary>
         private readonly IOrderRepository _orderRepository;
 
+        /// <summary>
+        /// Максимальное количество позиций
+        /// </summary>
+        private const int MaxCount = 10;
+
+        /// <summary>
+        /// Максимальная сумма заказа
+        /// </summary>
+        private const decimal MaxSum = 15000;
+
         /// <inheritdoc/>
         public OrdersController(IOrderRepository orderRepository)
         {
@@ -68,6 +78,9 @@ namespace TestTask.Controllers
         [HttpPost]
         public async Task<OrderModel> AddOrder(OrderPostModel order)
         {
+            if (order.GoodsCount > MaxCount) throw new Exception($"Проверьте заказ. В заказе не должно быть больше {MaxCount} позиций");
+            if (order.Sum > MaxSum) throw new Exception($"Проверьте заказ. Сумма заказа не должна превышать {MaxSum}");
+
             var newOrder = await _orderRepository.AddAsync(order.ToOrder());
             return new OrderModel(newOrder);
         }
@@ -79,6 +92,10 @@ namespace TestTask.Controllers
         [HttpPut]
         public async Task<OrderModel> SaveOrder(OrderPutModel order)
         {
+            if (order.GoodsCount > MaxCount) throw new Exception($"Проверьте заказ. В заказе не должно быть больше {MaxCount} позиций");
+            if (order.Sum > MaxSum) throw new Exception($"Проверьте заказ. Сумма заказа не должна превышать {MaxSum}");
+            if (order.Status != Status.Registred) throw new Exception($"Закоз можно изменить только если он в статусе \"Зарегистрирован\"");
+
             var newOrder = await _orderRepository.SaveAsync(order.ToOrder());
             return new OrderModel(newOrder);
         }
@@ -88,8 +105,12 @@ namespace TestTask.Controllers
         /// </summary>
         /// <param name="order">Данные заказа</param>
         [HttpPatch]
-        public async Task<OrderModel> PutchOrder(OrderPutchModel order)
+        public async Task<OrderModel> PatchOrder(OrderPatchModel order)
         {
+            if (order.GoodsCount > MaxCount) throw new Exception($"Проверьте заказ. В заказе не должно быть больше {MaxCount} позиций");
+            if (order.Sum > MaxSum) throw new Exception($"Проверьте заказ. Сумма заказа не должна превышать {MaxSum}");
+            if (order.Status != Status.Registred) throw new Exception($"Закоз можно изменить только если он в статусе \"Зарегистрирован\"");
+
             var baseOrder = await _orderRepository.GetByNumberAsync(order.Number);
             if (order.Goods != null)
             {
@@ -123,6 +144,9 @@ namespace TestTask.Controllers
         [HttpDelete("{number}")]
         public async Task DeleteOrder(short number)
         {
+            var order = await _orderRepository.GetByNumberAsync(number);
+            if (order.Status != Status.Registred) throw new Exception($"Закоз можно удалить только если он в статусе \"Зарегистрирован\"");
+
             await _orderRepository.DeleteAsync(number);
         }
     }

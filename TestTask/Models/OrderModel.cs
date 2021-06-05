@@ -54,6 +54,8 @@ namespace TestTask.Models
     {
         public string Name { get; set; }
         public IEnumerable<OrderGoodModel> Goods { get; set; }
+        public decimal Sum => Goods == null ? 0 : Goods.Sum(g => (g.Good?.Price ?? 0) * g.Count);
+        public int GoodsCount => Goods == null ? 0 : Goods.Count();
 
         internal virtual Order ToOrder()
         {
@@ -61,7 +63,7 @@ namespace TestTask.Models
         }
     }
 
-    public class OrderPutchModel : OrderModel
+    public class OrderPatchModel : OrderModel
     {
         public new Status? Status { get; set; }
         public new DateTime? Date { get; set; }
