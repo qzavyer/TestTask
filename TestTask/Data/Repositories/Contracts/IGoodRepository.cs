@@ -4,6 +4,9 @@ using TestTask.Data.Models;
 
 namespace TestTask.Data.Repositories.Contracts
 {
+    /// <summary>
+    /// Интерфейс репозитория товаров
+    /// </summary>
     public interface IGoodRepository
     {
         /// <summary>

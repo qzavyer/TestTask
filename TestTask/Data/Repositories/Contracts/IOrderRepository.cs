@@ -2,15 +2,24 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TestTask.Data.Models;
+using TestTask.Enums;
 
 namespace TestTask.Data.Repositories.Contracts
 {
+    /// <summary>
+    /// Интерфейс репозитория заказов
+    /// </summary>
     public interface IOrderRepository
     {
         /// <summary>
         /// Возвращает все заказы
         /// </summary>
         Task<IEnumerable<Order>> AllAsync();
+
+        /// <summary>
+        /// Возвращает все заказы
+        /// </summary>
+        Task<IEnumerable<Order>> AllByStatusAsync(Status status);
 
         /// <summary>
         /// Возвращает все заказы на указанную дату
